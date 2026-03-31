@@ -2,7 +2,7 @@ from datetime import date, datetime, timedelta, timezone
 
 from flask import g, jsonify, redirect, render_template, request, url_for
 
-from tahrir.utils.date_time import get_start_week
+from tahrir.utils.date_time import get_start_week, last_day_of_calendar_month
 
 from . import blueprint as bp
 
@@ -57,10 +57,7 @@ def report_year_month(year, month):
     frame = "month"
 
     start = date(year, month, 1)
-    # get the last day of the month
-    stop = start + timedelta(days=32)
-    stop.replace(day=1)
-    stop = stop - timedelta(days=1)
+    stop = last_day_of_calendar_month(year, month)
 
     user_to_rank = g.tahrirdb.make_leaderboard(
         start=start,
@@ -161,9 +158,7 @@ def json_report_year(year=None, week=None, month=None, day=None):
     elif month is not None:
         # Monthly report
         start = date(year, month, 1)
-        stop = start + timedelta(days=32)
-        stop = stop.replace(day=1)
-        stop = stop - timedelta(days=1)
+        stop = last_day_of_calendar_month(year, month)
     elif year is not None:
         # Yearly report
         start = date(year, 1, 1)
